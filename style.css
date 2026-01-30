@@ -170,8 +170,10 @@ header p {
 
 /* Card Front (Face Up) */
 .card-back {
-    background: var(--card-gradient);
-    color: #1a202c;
+    background: url('assets/cards.png') no-repeat;
+    background-size: 1300% 400%;
+    /* 13 columns, 4 rows */
+    background-color: white;
     transform: rotateY(180deg);
 }
 
@@ -186,6 +188,13 @@ header p {
     border-radius: 20px;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.1) 100%);
     pointer-events: none;
+}
+
+.value,
+.suit-center,
+.suit-top,
+.suit-bottom {
+    display: none !important;
 }
 
 .card-back[data-color="red"] {

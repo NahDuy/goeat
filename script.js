@@ -154,17 +154,26 @@ function startSinglePick() {
 // UPDATE CARD HTML
 function updateCardVisual(container, card) {
     const cardBack = container.querySelector('.card-back');
-    const valueEl = container.querySelector('.value');
-    const tops = container.querySelectorAll('.suit-top');
-    const bottoms = container.querySelectorAll('.suit-bottom');
-    const centers = container.querySelectorAll('.suit-center');
 
-    cardBack.setAttribute('data-color', card.color);
-    valueEl.textContent = card.display;
-    const sym = `<div>${card.symbol}</div>`;
-    tops.forEach(el => el.innerHTML = `${card.display}${sym}`);
-    bottoms.forEach(el => el.innerHTML = `${card.display}${sym}`);
-    centers.forEach(el => el.innerHTML = card.symbol);
+    // Calculate Sprite Position
+    // Rows: Hearts(0), Diamonds(1), Clubs(2), Spades(3)
+    const suitMap = { 'hearts': 0, 'diamonds': 1, 'clubs': 2, 'spades': 3 };
+    // Cols: A(0), 2(1)... 10(9), J(10), Q(11), K(12)
+    const valueMap = {
+        'A': 0, '2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '7': 6,
+        '8': 7, '9': 8, '10': 9, 'J': 10, 'Q': 11, 'K': 12
+    };
+
+    const row = suitMap[card.suit];
+    const col = valueMap[card.value];
+
+    // Background Position Percentage
+    // X: col * (100 / 12)%
+    // Y: row * (100 / 3)%
+    const x = (col / 12) * 100;
+    const y = (row / 3) * 100;
+
+    cardBack.style.backgroundPosition = `${x}% ${y}%`;
 }
 
 // MYSTERY PICK 5 LOGIC
@@ -203,11 +212,7 @@ function startPick5() {
                  <div class="card-front">
                     <div class="card-pattern"></div>
                 </div>
-                <div class="card-back" data-color="${card.color}">
-                    <div class="suit-top">${card.display}</div>
-                    <div class="suit-center">${card.symbol}</div>
-                    <div class="suit-bottom">${card.display}</div>
-                </div>
+                <div class="card-back"></div>
             </div>
         `;
 
