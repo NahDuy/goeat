@@ -1,156 +1,146 @@
-const data = [
-    // A (Ace)
-    { suit: 'hearts', value: 'A', display: 'A', dish: 'Phở', color: 'red', symbol: '♥' },
-    { suit: 'diamonds', value: 'A', display: 'A', dish: 'Cơm tấm', color: 'red', symbol: '♦' },
-    { suit: 'clubs', value: 'A', display: 'A', dish: 'Bánh mì', color: 'black', symbol: '♣' },
-    { suit: 'spades', value: 'A', display: 'A', dish: 'Bún đậu mắm tôm', color: 'black', symbol: '♠' },
-
-    // 2
-    { suit: 'hearts', value: '2', display: '2', dish: 'Bún bò Huế', color: 'red', symbol: '♥' },
-    { suit: 'diamonds', value: '2', display: '2', dish: 'Cơm gà', color: 'red', symbol: '♦' },
-    { suit: 'clubs', value: '2', display: '2', dish: 'Bánh xèo', color: 'black', symbol: '♣' },
-    { suit: 'spades', value: '2', display: '2', dish: 'Bún chả', color: 'black', symbol: '♠' },
-
-    // 3
-    { suit: 'hearts', value: '3', display: '3', dish: 'Bún riêu', color: 'red', symbol: '♥' },
-    { suit: 'diamonds', value: '3', display: '3', dish: 'Cơm sườn', color: 'red', symbol: '♦' },
-    { suit: 'clubs', value: '3', display: '3', dish: 'Bánh cuốn', color: 'black', symbol: '♣' },
-    { suit: 'spades', value: '3', display: '3', dish: 'Nem nướng', color: 'black', symbol: '♠' },
-
-    // 4
-    { suit: 'hearts', value: '4', display: '4', dish: 'Hủ tiếu', color: 'red', symbol: '♥' },
-    { suit: 'diamonds', value: '4', display: '4', dish: 'Cơm chiên', color: 'red', symbol: '♦' },
-    { suit: 'clubs', value: '4', display: '4', dish: 'Bánh khọt', color: 'black', symbol: '♣' },
-    { suit: 'spades', value: '4', display: '4', dish: 'Gỏi cuốn', color: 'black', symbol: '♠' },
-
-    // 5
-    { suit: 'hearts', value: '5', display: '5', dish: 'Miến gà', color: 'red', symbol: '♥' },
-    { suit: 'diamonds', value: '5', display: '5', dish: 'Cơm bò lúc lắc', color: 'red', symbol: '♦' },
-    { suit: 'clubs', value: '5', display: '5', dish: 'Bánh căn', color: 'black', symbol: '♣' },
-    { suit: 'spades', value: '5', display: '5', dish: 'Chả giò', color: 'black', symbol: '♠' },
-
-    // 6
-    { suit: 'hearts', value: '6', display: '6', dish: 'Cháo sườn', color: 'red', symbol: '♥' },
-    { suit: 'diamonds', value: '6', display: '6', dish: 'Cơm niêu', color: 'red', symbol: '♦' },
-    { suit: 'clubs', value: '6', display: '6', dish: 'Bánh ướt', color: 'black', symbol: '♣' },
-    { suit: 'spades', value: '6', display: '6', dish: 'Ốc các loại', color: 'black', symbol: '♠' },
-
-    // 7
-    { suit: 'hearts', value: '7', display: '7', dish: 'Bánh canh', color: 'red', symbol: '♥' },
-    { suit: 'diamonds', value: '7', display: '7', dish: 'Cơm cá kho', color: 'red', symbol: '♦' },
-    { suit: 'clubs', value: '7', display: '7', dish: 'Bánh bèo', color: 'black', symbol: '♣' },
-    { suit: 'spades', value: '7', display: '7', dish: 'Lẩu Thái', color: 'black', symbol: '♠' },
-
-    // 8
-    { suit: 'hearts', value: '8', display: '8', dish: 'Bún mọc', color: 'red', symbol: '♥' },
-    { suit: 'diamonds', value: '8', display: '8', dish: 'Cơm gà xối mỡ', color: 'red', symbol: '♦' },
-    { suit: 'clubs', value: '8', display: '8', dish: 'Bánh đúc', color: 'black', symbol: '♣' },
-    { suit: 'spades', value: '8', display: '8', dish: 'Lẩu bò', color: 'black', symbol: '♠' },
-
-    // 9
-    { suit: 'hearts', value: '9', display: '9', dish: 'Bún thang', color: 'red', symbol: '♥' },
-    { suit: 'diamonds', value: '9', display: '9', dish: 'Cơm trộn', color: 'red', symbol: '♦' },
-    { suit: 'clubs', value: '9', display: '9', dish: 'Bánh hỏi', color: 'black', symbol: '♣' },
-    { suit: 'spades', value: '9', display: '9', dish: 'Lẩu hải sản', color: 'black', symbol: '♠' },
-
-    // 10
-    { suit: 'hearts', value: '10', display: '10', dish: 'Mì Quảng', color: 'red', symbol: '♥' },
-    { suit: 'diamonds', value: '10', display: '10', dish: 'Cơm chay', color: 'red', symbol: '♦' },
-    { suit: 'clubs', value: '10', display: '10', dish: 'Bánh tráng nướng', color: 'black', symbol: '♣' },
-    { suit: 'spades', value: '10', display: '10', dish: 'BBQ nướng', color: 'black', symbol: '♠' },
-
-    // J
-    { suit: 'hearts', value: 'J', display: 'J', dish: 'Bún cá', color: 'red', symbol: '♥' },
-    { suit: 'diamonds', value: 'J', display: 'J', dish: 'Cơm cà ri', color: 'red', symbol: '♦' },
-    { suit: 'clubs', value: 'J', display: 'J', dish: 'Bánh tráng trộn', color: 'black', symbol: '♣' },
-    { suit: 'spades', value: 'J', display: 'J', dish: 'Gà nướng', color: 'black', symbol: '♠' },
-
-    // Q
-    { suit: 'hearts', value: 'Q', display: 'Q', dish: 'Bún chả cá', color: 'red', symbol: '♥' },
-    { suit: 'diamonds', value: 'Q', display: 'Q', dish: 'Cơm vịt', color: 'red', symbol: '♦' },
-    { suit: 'clubs', value: 'Q', display: 'Q', dish: 'Bánh bột lọc', color: 'black', symbol: '♣' },
-    { suit: 'spades', value: 'Q', display: 'Q', dish: 'Vịt quay', color: 'black', symbol: '♠' },
-
-    // K
-    { suit: 'hearts', value: 'K', display: 'K', dish: 'Bún mắm', color: 'red', symbol: '♥' },
-    { suit: 'diamonds', value: 'K', display: 'K', dish: 'Cơm thịt kho', color: 'red', symbol: '♦' },
-    { suit: 'clubs', value: 'K', display: 'K', dish: 'Bánh bao', color: 'black', symbol: '♣' },
-    { suit: 'spades', value: 'K', display: 'K', dish: 'Hải sản', color: 'black', symbol: '♠' }
-];
-
 const cardContainer = document.getElementById('cardContainer');
 const randomBtn = document.getElementById('randomBtn');
 const dishName = document.getElementById('dishName');
 const dishBadge = document.getElementById('dishBadge');
+const cardInner = document.querySelector('.card-inner');
 const cardBack = document.querySelector('.card-back');
 const suitTop = document.querySelector('.suit-top');
 const suitBottom = document.querySelector('.suit-bottom');
 const suitCenter = document.querySelector('.suit-center');
 const valueEl = document.querySelector('.value');
 
-let isFlipped = false;
-let isAnimating = false;
+// Use data from window
+const data = window.FOOD_DATA || [];
 
-function pad(num) {
-    return num.toString();
-}
+let isAnimating = false;
+let shuffleInterval;
 
 function updateCard(card) {
     cardBack.setAttribute('data-color', card.color);
 
-    // Update content
     const content = card.display;
     valueEl.textContent = content;
 
-    // Update suits
     const symbolHtml = `<div>${card.symbol}</div>`;
     suitTop.innerHTML = `${content}${symbolHtml}`;
     suitBottom.innerHTML = `${content}${symbolHtml}`;
     suitCenter.innerHTML = card.symbol;
 }
 
-function randomize() {
-    if (isAnimating) return;
-    isAnimating = true;
+function createConfetti() {
+    for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.classList.add('confetti');
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
+        document.body.appendChild(confetti);
 
-    // Reset state if already flipped
-    if (isFlipped) {
-        cardContainer.classList.remove('flipped');
-        dishName.style.opacity = '0';
-        dishBadge.style.opacity = '0';
-
+        // Remove after animation
         setTimeout(() => {
-            performRandom();
-        }, 600);
-    } else {
-        performRandom();
+            confetti.remove();
+        }, 4000);
     }
 }
 
-function performRandom() {
-    // Select random card
-    const randomIndex = Math.floor(Math.random() * data.length);
-    const selectedCard = data[randomIndex];
+function startReviewLogic() {
+    isAnimating = true;
+    randomBtn.disabled = true;
+    randomBtn.textContent = "Đang tráo bài...";
 
-    // Update card visual
-    updateCard(selectedCard);
+    // Reset contents
+    dishName.textContent = "Đang chọn...";
+    dishName.style.opacity = '0.7';
+    dishBadge.style.opacity = '0';
 
-    // Flip card
-    setTimeout(() => {
-        cardContainer.classList.add('flipped');
-        isFlipped = true;
+    // Flip card back first if it was flipped
+    if (cardContainer.classList.contains('flipped')) {
+        cardContainer.classList.remove('flipped');
 
-        // Show dish name after flip finishes
+        // Wait for flip back then start shuffle
         setTimeout(() => {
-            dishName.textContent = selectedCard.dish;
-            dishName.style.opacity = '1';
-            dishBadge.style.opacity = '1';
-            isAnimating = false;
-        }, 300);
-    }, 100);
+            startShuffle();
+        }, 600);
+    } else {
+        startShuffle();
+    }
 }
 
-randomBtn.addEventListener('click', randomize);
+function startShuffle() {
+    let speed = 50; // Initial speed (ms)
+    let steps = 0;
+    const maxSteps = 25; // How many shuffles before stopping
 
-// Initial click hint
-cardContainer.addEventListener('click', randomize);
+    // Add shaking effect
+    cardContainer.classList.add('shaking');
+
+    function nextStep() {
+        // Randomly pick a card to show immediately (ghosting effect/shuffling look)
+        // Note: In real poker we see back, but here we can flash values or just shake
+        // For this effect, we will just shake the BACK of the card, 
+        // OR we can even flip the card fast to show many options.
+        // Let's stick to Shaking the BACK card for mystery, then flip reveal.
+
+        /* 
+           If the user wants to see the card Changing values rapidly, we need to flip it first.
+           But usually "Picking a card" means we see the back until revealed.
+           Let's make it more dramatic: 
+           1. Shake the card back (already added class)
+           2. After delay, stop shake, flip and show result.
+        */
+
+        steps++;
+
+        if (steps > maxSteps) {
+            finishShuffle();
+        } else {
+            // Slow down gradually? 
+            // Actually for "Shaking" back, we just wait.
+            // If we want to simulate "riffling" through cards, we could do that too.
+            // Let's keep it simple: Shake for 2 seconds.
+        }
+    }
+
+    // Since we are just shaking, we can use timeout instead of steps loop for shaking
+    setTimeout(finishShuffle, 2000);
+}
+
+function finishShuffle() {
+    cardContainer.classList.remove('shaking');
+
+    // Pick winner
+    const randomIndex = Math.floor(Math.random() * data.length);
+    const winner = data[randomIndex];
+
+    // Update card content (hidden)
+    updateCard(winner);
+
+    // Flip to reveal
+    cardContainer.classList.add('flipped');
+
+    // Show text after flip
+    setTimeout(() => {
+        dishName.textContent = winner.dish;
+        dishName.style.opacity = '1';
+        dishBadge.style.opacity = '1';
+        dishBadge.textContent = "Món Ngon Cho Bạn";
+
+        createConfetti();
+
+        isAnimating = false;
+        randomBtn.disabled = false;
+        randomBtn.textContent = "Bốc Món Ngẫu Nhiên";
+    }, 600);
+}
+
+randomBtn.addEventListener('click', () => {
+    if (!isAnimating) startReviewLogic();
+});
+
+// Click card to trigger too
+cardContainer.addEventListener('click', () => {
+    if (!isAnimating) startReviewLogic();
+});
+
+// Init ? symbol on front
+document.querySelector('.card-front span').textContent = "?";
