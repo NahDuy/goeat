@@ -156,8 +156,9 @@ function updateCardVisual(container, card) {
     const cardBack = container.querySelector('.card-back');
 
     // Calculate Sprite Position
-    // Rows: Hearts(0), Diamonds(1), Clubs(2), Spades(3)
-    const suitMap = { 'hearts': 0, 'diamonds': 1, 'clubs': 2, 'spades': 3 };
+    // New Sprite Layout (Codecademy):
+    // Row 0: Spades, Row 1: Hearts, Row 2: Diamonds, Row 3: Clubs
+    const suitMap = { 'spades': 0, 'hearts': 1, 'diamonds': 2, 'clubs': 3 };
     // Cols: A(0), 2(1)... 10(9), J(10), Q(11), K(12)
     const valueMap = {
         'A': 0, '2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '7': 6,
