@@ -4,21 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hôm Nay Ăn Gì? - Premium</title>
+    <title>Hôm Nay Ăn Gì? - Pokemon Ed.</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    <!-- Mali Font for Cute/Handwritten look -->
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <!-- Sound Toggle -->
-    <button id="soundToggle" class="icon-btn sound-btn">🔊</button>
+    <!-- Top Controls Wrapper -->
+    <div class="top-controls">
+        <button id="soundToggle" class="icon-btn sound-btn" title="Âm thanh">🔊</button>
+        <button class="icon-btn settings-btn" title="Cài đặt">⚙️</button>
+    </div>
 
     <div class="container">
         <header>
             <h1>Hôm Nay Ăn Gì?</h1>
-            <p>Bốc bài - Chọn món cực Chill</p>
+            <p>Pika Pika! Chọn món siêu tốc!</p>
         </header>
 
         <!-- Filters -->
@@ -34,21 +38,18 @@
             <div class="card-container" id="cardContainer">
                 <div class="card-inner">
                     <div class="card-front">
-                        <div class="card-pattern"></div>
-                        <span>?</span>
+                        <!-- Pokeball CSS drawn in style.css -->
+                        <div class="pokeball-line"></div>
+                        <div class="pokeball-center"></div>
                     </div>
-                    <div class="card-back">
-                        <div class="suit-top"></div>
-                        <div class="value"></div>
-                        <div class="suit-center"></div>
-                        <div class="suit-bottom"></div>
-                    </div>
+                    <!-- Face Up injected by JS -->
+                    <div class="card-back"></div>
                 </div>
             </div>
 
             <!-- Hand (5 Cards) Mode -->
             <div class="hand-container" id="handContainer" style="display: none;">
-                <!-- 5 cards will be injected here -->
+                <!-- 5 cards injected here -->
             </div>
 
             <div class="result-box">
@@ -58,14 +59,22 @@
 
             <div class="action-buttons">
                 <button id="randomBtn" class="premium-btn">Bốc 1 Món</button>
-                <button id="pick5Btn" class="secondary-btn">Bốc 5 Món</button>
+                <button id="pick5Btn" class="secondary-btn">Bốc 5 Chọn 1</button>
             </div>
         </main>
 
-        <!-- History -->
+        <!-- Pokedex History Panel -->
         <div class="history-panel">
-            <h3>Lịch sử bốc</h3>
-            <div id="historyList"></div>
+            <div class="pokedex-header">
+                <div class="led-blue"></div>
+                <div class="led-small led-red"></div>
+                <div class="led-small led-yellow"></div>
+                <div class="led-small led-green"></div>
+            </div>
+            <div class="pokedex-screen">
+                <h3>Nhật ký ăn uống</h3>
+                <div id="historyList"></div>
+            </div>
         </div>
     </div>
 

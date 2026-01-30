@@ -17,12 +17,12 @@ let filteredData = [];
 let isAnimating = false;
 
 // --- SETUP ---
-const settingsBtn = document.createElement('button');
-settingsBtn.innerHTML = '⚙️';
-settingsBtn.className = 'icon-btn settings-btn';
-document.body.appendChild(settingsBtn);
+// Buttons are now in HTML, just get references
+const settingsBtn = document.querySelector('.settings-btn');
+const soundBtn = document.querySelector('.sound-btn'); // Use existing logic or update toggle
 
 const modal = document.createElement('div');
+// ... rest of modal creation ...
 modal.className = 'modal';
 modal.innerHTML = `
     <div class="modal-content">
@@ -214,12 +214,13 @@ function startPick5() {
     deal.forEach((card, index) => {
         const mini = document.createElement('div');
         mini.className = 'mini-card';
-        // HTML Structure
+        // HTML Structure (Pokemon Theme)
         mini.innerHTML = `
             <div class="card-inner">
                  <div class="card-front">
-                    <div class="card-pattern"></div>
-                </div>
+                    <!-- Pokeball CSS for Mini settings -->
+                    <div class="card-pattern" style="border:none; background:none;"></div>
+                 </div>
                 <div class="card-back"></div>
             </div>
         `;
