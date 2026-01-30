@@ -170,7 +170,7 @@ header p {
 
 /* Card Front (Face Up) */
 .card-back {
-    background: url('assets/cards.png') no-repeat;
+    background: url('https://s3.amazonaws.com/codecademy-content/courses/javascript-blackjack-cards/cards.png') no-repeat;
     background-size: 1300% 400%;
     /* 13 columns, 4 rows */
     background-color: white;
