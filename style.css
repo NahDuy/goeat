@@ -170,11 +170,27 @@ header p {
 
 /* Card Front (Face Up) */
 .card-back {
-    background: url('https://s3.amazonaws.com/codecademy-content/courses/javascript-blackjack-cards/cards.png') no-repeat;
-    background-size: 1300% 400%;
-    /* 13 columns, 4 rows */
-    background-color: white;
+    background: linear-gradient(135deg, #fffcf5 0%, #f7f3e8 100%);
+    /* Creamy paper look */
+    color: #1a202c;
     transform: rotateY(180deg);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px;
+    font-family: 'Times New Roman', serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-back::before {
+    /* Subtle paper texture */
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: repeating-linear-gradient(45deg, #000 0, #000 1px, transparent 1px, transparent 10px);
 }
 
 .card-back::after {
@@ -186,19 +202,100 @@ header p {
     right: 0;
     bottom: 0;
     border-radius: 20px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.1) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 45%, rgba(255, 255, 255, 0.1) 100%);
     pointer-events: none;
 }
 
-.value,
-.suit-center,
-.suit-top,
-.suit-bottom {
-    display: none !important;
+/* Colors */
+.card-back[data-color="red"] {
+    color: #d32f2f;
 }
 
-.card-back[data-color="red"] {
-    color: #e53e3e;
+.card-back[data-color="black"] {
+    color: #212121;
+}
+
+/* Corner Styles */
+.card-corner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+    font-weight: bold;
+    font-size: 1.8rem;
+    position: absolute;
+}
+
+.card-corner span {
+    font-size: 1.2rem;
+    margin-top: -2px;
+}
+
+.top-left {
+    top: 12px;
+    left: 12px;
+}
+
+.bottom-right {
+    bottom: 12px;
+    right: 12px;
+    transform: rotate(180deg);
+}
+
+/* Center Content */
+.card-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+}
+
+/* For J, Q, K */
+.card-face-text {
+    font-size: 4rem;
+    font-weight: bold;
+    border: 3px solid currentColor;
+    border-radius: 8px;
+    padding: 0px 15px;
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* For Number Cards */
+.card-face-suit {
+    font-size: 6rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* Mini Card Adjustments */
+.mini-card .card-corner {
+    font-size: 1.2rem;
+}
+
+.mini-card .card-corner span {
+    font-size: 0.8rem;
+    margin-top: 0;
+}
+
+.mini-card .top-left {
+    top: 6px;
+    left: 6px;
+}
+
+.mini-card .bottom-right {
+    bottom: 6px;
+    right: 6px;
+}
+
+.mini-card .card-face-suit {
+    font-size: 3.5rem;
+}
+
+.mini-card .card-face-text {
+    font-size: 2.5rem;
+    border-width: 2px;
+    padding: 0 8px;
 }
 
 /* Hand Container (Pick 5) */

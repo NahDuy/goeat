@@ -154,27 +154,34 @@ function startSinglePick() {
 // UPDATE CARD HTML
 function updateCardVisual(container, card) {
     const cardBack = container.querySelector('.card-back');
+    cardBack.setAttribute('data-color', card.color);
 
-    // Calculate Sprite Position
-    // New Sprite Layout (Codecademy):
-    // Row 0: Spades, Row 1: Hearts, Row 2: Diamonds, Row 3: Clubs
-    const suitMap = { 'spades': 0, 'hearts': 1, 'diamonds': 2, 'clubs': 3 };
-    // Cols: A(0), 2(1)... 10(9), J(10), Q(11), K(12)
-    const valueMap = {
-        'A': 0, '2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '7': 6,
-        '8': 7, '9': 8, '10': 9, 'J': 10, 'Q': 11, 'K': 12
-    };
+    // Determine Center Content (Text for JQK, Big Suit for others)
+    let centerHtml = '';
+    if (['J', 'Q', 'K'].includes(card.value)) {
+        centerHtml = `<div class="card-face-text">${card.value}</div>`;
+    } else {
+        centerHtml = `<div class="card-face-suit">${card.symbol}</div>`;
+    }
 
-    const row = suitMap[card.suit];
-    const col = valueMap[card.value];
+    // New Inner HTML Structure
+    cardBack.innerHTML = `
+        <div class="card-corner top-left">
+            ${card.display}
+            <span>${card.symbol}</span>
+        </div>
+        <div class="card-center">
+            ${centerHtml}
+        </div>
+        <div class="card-corner bottom-right">
+            ${card.display}
+            <span>${card.symbol}</span>
+        </div>
+    `;
 
-    // Background Position Percentage
-    // X: col * (100 / 12)%
-    // Y: row * (100 / 3)%
-    const x = (col / 12) * 100;
-    const y = (row / 3) * 100;
-
-    cardBack.style.backgroundPosition = `${x}% ${y}%`;
+    // Clean style from previous sprite attempts
+    cardBack.style.background = '';
+    cardBack.style.backgroundSize = '';
 }
 
 // MYSTERY PICK 5 LOGIC
