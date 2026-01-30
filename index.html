@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hôm Nay Ăn Gì?</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Hôm Nay Ăn Gì?</h1>
+            <p>Bốc bài - Chọn món</p>
+        </header>
+
+        <main>
+            <div class="card-container" id="cardContainer">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <div class="card-pattern"></div>
+                        <span>?</span>
+                    </div>
+                    <div class="card-back">
+                        <div class="suit-top"></div>
+                        <div class="value"></div>
+                        <div class="suit-center"></div>
+                        <div class="suit-bottom"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-box">
+                <h2 id="dishName">Nhấn nút bên dưới!</h2>
+                <div class="dish-badge" id="dishBadge" style="opacity: 0;">Món ngon</div>
+            </div>
+
+            <button id="randomBtn" class="premium-btn">
+                <span>Bốc Món Ngẫu Nhiên</span>
+                <div class="shine"></div>
+            </button>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
