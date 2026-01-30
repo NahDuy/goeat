@@ -6,8 +6,8 @@ const CardSchema = new mongoose.Schema({
     display: { type: String, required: true },
     dish: { type: String, required: true },
     color: { type: String, required: true },
-    symbol: { type: String, required: true }
+    symbol: { type: String, required: true },
+    category: { type: String, required: true, default: 'other' } // rice, noodle, snack, other
 });
 
-// Prevent model recompilation error in serverless environment
 module.exports = mongoose.models.Card || mongoose.model('Card', CardSchema);

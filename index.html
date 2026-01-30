@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hôm Nay Ăn Gì?</title>
+    <title>Hôm Nay Ăn Gì? - Premium</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
@@ -12,13 +12,25 @@
 </head>
 
 <body>
+    <!-- Sound Toggle -->
+    <button id="soundToggle" class="icon-btn sound-btn">🔊</button>
+
     <div class="container">
         <header>
             <h1>Hôm Nay Ăn Gì?</h1>
-            <p>Bốc bài - Chọn món</p>
+            <p>Bốc bài - Chọn món cực Chill</p>
         </header>
 
+        <!-- Filters -->
+        <div class="filter-bar">
+            <button class="filter-btn active" data-category="all">Tất cả</button>
+            <button class="filter-btn" data-category="rice">Cơm</button>
+            <button class="filter-btn" data-category="noodle">Bún/Phở</button>
+            <button class="filter-btn" data-category="snack">Ăn vặt</button>
+        </div>
+
         <main>
+            <!-- Single Card Mode -->
             <div class="card-container" id="cardContainer">
                 <div class="card-inner">
                     <div class="card-front">
@@ -34,18 +46,34 @@
                 </div>
             </div>
 
+            <!-- Hand (5 Cards) Mode -->
+            <div class="hand-container" id="handContainer" style="display: none;">
+                <!-- 5 cards will be injected here -->
+            </div>
+
             <div class="result-box">
                 <h2 id="dishName">Nhấn nút bên dưới!</h2>
                 <div class="dish-badge" id="dishBadge" style="opacity: 0;">Món ngon</div>
             </div>
 
-            <button id="randomBtn" class="premium-btn">
-                <span>Bốc Món Ngẫu Nhiên</span>
-                <div class="shine"></div>
-            </button>
+            <div class="action-buttons">
+                <button id="randomBtn" class="premium-btn">Bốc 1 Món</button>
+                <button id="pick5Btn" class="secondary-btn">Bốc 5 Món</button>
+            </div>
         </main>
+
+        <!-- History -->
+        <div class="history-panel">
+            <h3>Lịch sử bốc</h3>
+            <div id="historyList"></div>
+        </div>
     </div>
 
+    <!-- Audio Elements -->
+    <audio id="shuffleSound" src="https://assets.mixkit.co/active_storage/sfx/2556/2556-preview.mp3"
+        preload="auto"></audio>
+    <audio id="revealSound" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"
+        preload="auto"></audio>
 
     <script src="script.js"></script>
 </body>
