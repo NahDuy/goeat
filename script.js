@@ -9,11 +9,106 @@ const suitBottom = document.querySelector('.suit-bottom');
 const suitCenter = document.querySelector('.suit-center');
 const valueEl = document.querySelector('.value');
 
-// Use data from window
-const data = window.FOOD_DATA || [];
-
+// State
+let foodData = [];
 let isAnimating = false;
-let shuffleInterval;
+
+// UI Elements for Settings
+const settingsBtn = document.createElement('button');
+settingsBtn.innerHTML = '⚙️';
+settingsBtn.className = 'settings-btn';
+document.body.appendChild(settingsBtn);
+
+const modal = document.createElement('div');
+modal.className = 'modal';
+modal.innerHTML = `
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Chỉnh Sửa Món Ăn</h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body" id="settingsList">
+            <!-- Items injected here -->
+            <div style="text-align: center; padding: 20px;">Đang tải dữ liệu...</div>
+        </div>
+    </div>
+`;
+document.body.appendChild(modal);
+
+// Fetch Data from API
+async function fetchData() {
+    try {
+        randomBtn.textContent = "Đang tải dữ liệu...";
+        randomBtn.disabled = true;
+
+        const response = await fetch('/api/cards');
+        if (!response.ok) throw new Error('API Error');
+
+        foodData = await response.json();
+
+        randomBtn.textContent = "Bốc Món Ngẫu Nhiên";
+        randomBtn.disabled = false;
+        renderSettings();
+    } catch (error) {
+        console.error("Lỗi:", error);
+        dishName.textContent = "Lỗi kết nối Server!";
+        dishName.style.color = "red";
+    }
+}
+
+// Update Data to API
+async function updateDish(id, newName) {
+    try {
+        const response = await fetch('/api/cards', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, dish: newName })
+        });
+
+        if (response.ok) {
+            // Update local state
+            const index = foodData.findIndex(f => f._id === id);
+            if (index !== -1) foodData[index].dish = newName;
+        }
+    } catch (error) {
+        console.error("Save Error:", error);
+        alert("Lỗi khi lưu món ăn!");
+    }
+}
+
+// Render Settings List
+function renderSettings() {
+    const list = document.getElementById('settingsList');
+    list.innerHTML = '';
+
+    foodData.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'setting-row';
+        row.innerHTML = `
+            <span class="card-label">${item.display} ${item.symbol}</span>
+            <input type="text" value="${item.dish}" data-id="${item._id}">
+        `;
+
+        const input = row.querySelector('input');
+        input.addEventListener('change', (e) => {
+            updateDish(item._id, e.target.value);
+            // Flash success
+            input.style.borderColor = "#43e97b";
+            setTimeout(() => input.style.borderColor = "#ddd", 1000);
+        });
+
+        list.appendChild(row);
+    });
+}
+
+// Toggle Modal
+settingsBtn.addEventListener('click', () => modal.style.display = 'flex');
+modal.querySelector('.close-btn').addEventListener('click', () => modal.style.display = 'none');
+modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.style.display = 'none';
+});
+
+// --- Existing Game Logic ---
 
 function updateCard(card) {
     cardBack.setAttribute('data-color', card.color);
@@ -35,11 +130,7 @@ function createConfetti() {
         confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
         confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
         document.body.appendChild(confetti);
-
-        // Remove after animation
-        setTimeout(() => {
-            confetti.remove();
-        }, 4000);
+        setTimeout(() => confetti.remove(), 4000);
     }
 }
 
@@ -48,60 +139,20 @@ function startReviewLogic() {
     randomBtn.disabled = true;
     randomBtn.textContent = "Đang tráo bài...";
 
-    // Reset contents
     dishName.textContent = "Đang chọn...";
     dishName.style.opacity = '0.7';
     dishBadge.style.opacity = '0';
 
-    // Flip card back first if it was flipped
     if (cardContainer.classList.contains('flipped')) {
         cardContainer.classList.remove('flipped');
-
-        // Wait for flip back then start shuffle
-        setTimeout(() => {
-            startShuffle();
-        }, 600);
+        setTimeout(() => startShuffle(), 600);
     } else {
         startShuffle();
     }
 }
 
 function startShuffle() {
-    let speed = 50; // Initial speed (ms)
-    let steps = 0;
-    const maxSteps = 25; // How many shuffles before stopping
-
-    // Add shaking effect
     cardContainer.classList.add('shaking');
-
-    function nextStep() {
-        // Randomly pick a card to show immediately (ghosting effect/shuffling look)
-        // Note: In real poker we see back, but here we can flash values or just shake
-        // For this effect, we will just shake the BACK of the card, 
-        // OR we can even flip the card fast to show many options.
-        // Let's stick to Shaking the BACK card for mystery, then flip reveal.
-
-        /* 
-           If the user wants to see the card Changing values rapidly, we need to flip it first.
-           But usually "Picking a card" means we see the back until revealed.
-           Let's make it more dramatic: 
-           1. Shake the card back (already added class)
-           2. After delay, stop shake, flip and show result.
-        */
-
-        steps++;
-
-        if (steps > maxSteps) {
-            finishShuffle();
-        } else {
-            // Slow down gradually? 
-            // Actually for "Shaking" back, we just wait.
-            // If we want to simulate "riffling" through cards, we could do that too.
-            // Let's keep it simple: Shake for 2 seconds.
-        }
-    }
-
-    // Since we are just shaking, we can use timeout instead of steps loop for shaking
     setTimeout(finishShuffle, 2000);
 }
 
@@ -109,16 +160,12 @@ function finishShuffle() {
     cardContainer.classList.remove('shaking');
 
     // Pick winner
-    const randomIndex = Math.floor(Math.random() * data.length);
-    const winner = data[randomIndex];
+    const randomIndex = Math.floor(Math.random() * foodData.length);
+    const winner = foodData[randomIndex];
 
-    // Update card content (hidden)
     updateCard(winner);
-
-    // Flip to reveal
     cardContainer.classList.add('flipped');
 
-    // Show text after flip
     setTimeout(() => {
         dishName.textContent = winner.dish;
         dishName.style.opacity = '1';
@@ -134,13 +181,14 @@ function finishShuffle() {
 }
 
 randomBtn.addEventListener('click', () => {
-    if (!isAnimating) startReviewLogic();
+    if (!isAnimating && foodData.length > 0) startReviewLogic();
 });
 
-// Click card to trigger too
 cardContainer.addEventListener('click', () => {
-    if (!isAnimating) startReviewLogic();
+    if (!isAnimating && foodData.length > 0) startReviewLogic();
 });
 
-// Init ? symbol on front
 document.querySelector('.card-front span').textContent = "?";
+
+// Initialize
+fetchData();
