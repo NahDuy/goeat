@@ -31,7 +31,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     initHistory();
     setupEventListeners();
     setupAuthListeners();
+    setupEventListeners();
+    setupAuthListeners();
     setupGroupListeners();
+    setupMenuListeners();
 });
 // ... 
 const toggleGroupBtn = document.getElementById('toggleGroupBtn'); // Assuming this is defined elsewhere, adding for context
@@ -138,8 +141,6 @@ async function handleAuth(action) {
         const data = await res.json();
 
         if (res.ok) {
-            currentUser = data;
-            localStorage.setItem('user_auth', JSON.stringify(currentUser));
             updateAuthUI();
             authModal.style.display = 'none';
             showToast(`Xin chào Trainer, ${username}!`, 'success');
@@ -152,6 +153,39 @@ async function handleAuth(action) {
         console.error(e);
         showToast('Lỗi kết nối Server', 'error');
     }
+}
+
+// --- MENU LOGIC ---
+function setupMenuListeners() {
+    const menuBtn = document.getElementById('myMenuBtn');
+    const menuModal = document.getElementById('menuModal');
+
+    if (menuBtn && menuModal) {
+        menuBtn.addEventListener('click', () => {
+            menuModal.style.display = 'flex';
+            renderMyDeck();
+        });
+    }
+}
+
+function renderMyDeck() {
+    const list = document.getElementById('myDeckList');
+    if (!list) return;
+
+    if (foodData.length === 0) {
+        list.innerHTML = '<p>Chưa có món nào. Đang tải...</p>';
+        return;
+    }
+
+    list.innerHTML = foodData.map(item => `
+        <div style="background:white; margin-bottom:10px; padding:10px; border-radius:15px; border:2px solid #dfe6e9; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <span style="font-size:1.5rem;">${item.item === 'rice' ? '🍚' : '🍜'}</span>
+                <b>${item.dish}</b>
+            </div>
+            <span style="color:#aaa;">${item.value} ${item.suit}</span>
+        </div>
+     `).join('');
 }
 
 async function fetchMyGroups() {
