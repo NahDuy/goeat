@@ -10,6 +10,82 @@
     <!-- Mali Font for Cute/Handwritten look -->
     <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Extra styles for Auth/Group placeholders if not in style.css */
+        #authContainer {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 200;
+            font-family: 'Mali', cursive;
+        }
+
+        #authContainer button {
+            font-family: inherit;
+            font-weight: 700;
+        }
+
+        #userDisplay {
+            display: none;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px 10px;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #groupDashboard {
+            display: none;
+            margin-bottom: 2rem;
+        }
+
+        #groupLobby,
+        #groupRoom {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 2px dashed var(--pk-pink-dark);
+        }
+
+        #hostControls {
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            padding-top: 10px;
+        }
+
+        /* Modal Styles Overlay */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            padding: 2rem;
+            border-radius: 30px;
+            border: 4px solid var(--pk-pink-light);
+            text-align: center;
+            position: relative;
+        }
+
+        .close-auth {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: #aaa;
+        }
+    </style>
 </head>
 
 <body>
@@ -21,6 +97,15 @@
 
     <div class="container">
         <header>
+            <div id="authContainer">
+                <button id="loginBtnTrigger" class="secondary-btn"
+                    style="padding: 0.5rem 1rem; font-size: 0.8rem; background: var(--pk-blue);">Đăng nhập</button>
+                <div id="userDisplay">
+                    <span id="userNameDisplay" style="color: var(--pk-pink-dark); margin-right: 8px;">User</span>
+                    <button id="logoutBtn" style="color: red; font-weight: bold;">Logout</button>
+                </div>
+            </div>
+
             <h1>Hôm Nay Ăn Gì?</h1>
             <p>Pika Pika! Chọn món siêu tốc!</p>
         </header>
@@ -34,32 +119,89 @@
         </div>
 
         <main>
-            <!-- Single Card Mode -->
-            <div class="card-container" id="cardContainer">
-                <div class="card-inner">
-                    <div class="card-front">
-                        <!-- Pokeball CSS drawn in style.css -->
-                        <div class="pokeball-line"></div>
-                        <div class="pokeball-center"></div>
+            <!-- GROUP MODE UI -->
+            <div id="groupDashboard">
+                <!-- Lobby -->
+                <div id="groupLobby">
+                    <h2 style="color: var(--pk-pink-dark); margin-bottom: 1rem;">Chế độ Ăn Nhóm</h2>
+                    <div class="action-buttons" style="flex-direction: column; gap: 10px;">
+                        <button id="createGroupBtn" class="premium-btn">Tạo Phòng Mới</button>
+                        <div style="display: flex; gap: 5px; justify-content: center;">
+                            <input type="text" id="joinCodeInput" placeholder="Mã phòng (VD: X7A9)"
+                                style="padding: 10px; border-radius: 15px; border: 2px solid #dfe6e9; width: 60%; text-align: center; font-weight: bold; text-transform: uppercase;">
+                            <button id="joinGroupBtn" class="secondary-btn" style="padding: 0 1.5rem;">Vào</button>
+                        </div>
                     </div>
-                    <!-- Face Up injected by JS -->
-                    <div class="card-back"></div>
+                </div>
+
+                <!-- Waiting Room -->
+                <div id="groupRoom" style="display: none;">
+                    <h3 style="color: #636e72;">Phòng: <span id="roomCodeDisplay"
+                            style="font-size: 2.5rem; color: var(--pk-blue); font-weight: 800; display: block;">PENDING</span>
+                    </h3>
+
+                    <div class="pokedex-screen" style="margin: 1rem 0; text-align: left;">
+                        <h4 style="margin-bottom: 5px;">Thành viên:</h4>
+                        <ul id="memberList"
+                            style="list-style: none; padding-left: 5px; max-height: 100px; overflow-y: auto;">
+                            <!-- Members injected here -->
+                        </ul>
+                    </div>
+
+                    <div id="votingSection">
+                        <input type="text" id="dishVoteInput" placeholder="Bạn muốn ăn món gì?..."
+                            style="width: 100%; padding: 12px; border-radius: 15px; border: 2px solid #dfe6e9; margin-bottom: 10px; outline: none;">
+                        <button id="submitVoteBtn" class="premium-btn" style="width: 100%;">Gửi Đề Xuất</button>
+                    </div>
+
+                    <div id="hostControls" style="display: none; margin-top: 1rem;">
+                        <button id="rollGroupBtn" class="premium-btn"
+                            style="background: var(--pk-red); width: 100%; box-shadow: 0 5px 0 #d63031;">🎲 CHỐT ĐƠN
+                            (Host)</button>
+                    </div>
+
+                    <div id="groupResult" style="display: none; margin-top: 1rem; animation: wobble 1s infinite;">
+                        <h2 style="font-size: 1.2rem;">Hôm nay chúng ta ăn:</h2>
+                        <div id="groupResultText"
+                            style="color: var(--pk-red); font-size: 2.5rem; font-weight: 800; text-shadow: 2px 2px 0 white;">
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Hand (5 Cards) Mode -->
-            <div class="hand-container" id="handContainer" style="display: none;">
-                <!-- 5 cards injected here -->
-            </div>
+            <!-- EXISTING SOLO MODES -->
+            <div id="soloModes">
+                <!-- Single Card Mode -->
+                <div class="card-container" id="cardContainer">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <!-- Pokeball CSS -->
+                            <div class="card-front-inner"></div>
+                        </div>
+                        <!-- Face Up injected by JS -->
+                        <div class="card-back"></div>
+                    </div>
+                </div>
 
-            <div class="result-box">
-                <h2 id="dishName">Nhấn nút bên dưới!</h2>
-                <div class="dish-badge" id="dishBadge" style="opacity: 0;">Món ngon</div>
-            </div>
+                <!-- Hand (5 Cards) Mode -->
+                <div class="hand-container" id="handContainer" style="display: none;">
+                    <!-- 5 cards injected here -->
+                </div>
 
-            <div class="action-buttons">
-                <button id="randomBtn" class="premium-btn">Bốc 1 Món</button>
-                <button id="pick5Btn" class="secondary-btn">Bốc 5 Chọn 1</button>
+                <div class="result-box">
+                    <h2 id="dishName">Nhấn nút bên dưới!</h2>
+                    <div class="dish-badge" id="dishBadge" style="opacity: 0;">Món ngon</div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="randomBtn" class="premium-btn">Bốc 1 Món</button>
+                    <button id="pick5Btn" class="secondary-btn">Bốc 5 Chọn 1</button>
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <button id="toggleGroupBtn" class="secondary-btn" style="background: #a29bfe; width: 100%;">👥
+                        Chuyển sang Ăn Nhóm</button>
+                </div>
             </div>
         </main>
 
@@ -74,6 +216,23 @@
             <div class="pokedex-screen">
                 <h3>Nhật ký ăn uống</h3>
                 <div id="historyList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <button class="close-auth">&times;</button>
+            <h2 style="color: var(--pk-pink-dark); margin-bottom: 1.5rem;">Đăng nhập / Đăng ký</h2>
+            <input type="text" id="authUsername" placeholder="Tên đăng nhập"
+                style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #ddd; outline: none;">
+            <input type="password" id="authPassword" placeholder="Mật khẩu"
+                style="width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 10px; border: 1px solid #ddd; outline: none;">
+            <div style="display: flex; gap: 10px;">
+                <button id="doLoginBtn" class="premium-btn" style="flex:1;">Đăng nhập</button>
+                <button id="doRegisterBtn" class="secondary-btn"
+                    style="flex:1; background: #dfe6e9; color: #636e72;">Đăng ký</button>
             </div>
         </div>
     </div>
