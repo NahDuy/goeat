@@ -45,6 +45,30 @@ function updateAuthUI() {
 }
 
 // --- AUTH LOGIC ---
+// --- TOAST HELPER ---
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    if (!container) return alert(message); // Fallback
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+
+    let icon = 'ℹ️';
+    if (type === 'success') icon = '✅';
+    if (type === 'error') icon = '⚠️';
+
+    toast.innerHTML = `<span>${icon}</span> ${message}`;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.animation = 'fadeOut 0.3s forwards';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// --- AUTH LOGIC ---
+let authMode = 'login';
+
 function setupAuthListeners() {
     loginBtnTrigger.addEventListener('click', () => authModal.style.display = 'flex');
     closeAuthBtn.addEventListener('click', () => authModal.style.display = 'none');
@@ -53,18 +77,37 @@ function setupAuthListeners() {
         localStorage.removeItem('user_auth');
         currentUser = null;
         updateAuthUI();
-        alert('Đã đăng xuất!');
+        showToast('Đã đăng xuất', 'info');
     });
 
-    document.getElementById('doLoginBtn').addEventListener('click', () => handleAuth('login'));
-    document.getElementById('doRegisterBtn').addEventListener('click', () => handleAuth('register'));
+    const tabLogin = document.getElementById('tabLogin');
+    const tabRegister = document.getElementById('tabRegister');
+    const doAuthBtn = document.getElementById('doAuthBtn');
+
+    if (tabLogin && tabRegister && doAuthBtn) {
+        tabLogin.addEventListener('click', () => {
+            authMode = 'login';
+            tabLogin.classList.add('active');
+            tabRegister.classList.remove('active');
+            doAuthBtn.textContent = 'Đăng Nhập';
+        });
+
+        tabRegister.addEventListener('click', () => {
+            authMode = 'register';
+            tabRegister.classList.add('active');
+            tabLogin.classList.remove('active');
+            doAuthBtn.textContent = 'Đăng Ký (Tạo mới)';
+        });
+
+        doAuthBtn.addEventListener('click', () => handleAuth(authMode));
+    }
 }
 
 async function handleAuth(action) {
     const username = document.getElementById('authUsername').value;
     const password = document.getElementById('authPassword').value;
 
-    if (!username || !password) return alert('Vui lòng nhập đủ thông tin!');
+    if (!username || !password) return showToast('Vui lòng nhập đủ thông tin!', 'error');
 
     try {
         const res = await fetch(`${API_BASE}/auth`, {
@@ -75,22 +118,64 @@ async function handleAuth(action) {
         const data = await res.json();
 
         if (res.ok) {
-            currentUser = data; // { token, username, userId }
+            currentUser = data;
             localStorage.setItem('user_auth', JSON.stringify(currentUser));
             updateAuthUI();
             authModal.style.display = 'none';
-            // Assuming showToast and fetchMyGroups are defined elsewhere or will be added
-            // showToast(`Xin chào Trainer, ${username}!`, 'success');
-            // fetchMyGroups(); // Load groups after login
-            fetchData(); // Reload deck (Personalized)
-            alert(action === 'login' ? 'Đăng nhập thành công!' : 'Đăng ký thành công!');
+            showToast(`Xin chào Trainer, ${username}!`, 'success');
+            fetchMyGroups();
+            fetchData();
         } else {
-            alert(data.message || 'Có lỗi xảy ra');
+            showToast(data.message || 'Có lỗi xảy ra', 'error');
         }
     } catch (e) {
         console.error(e);
-        alert('Lỗi kết nối Server');
+        showToast('Lỗi kết nối Server', 'error');
     }
+}
+
+async function fetchMyGroups() {
+    if (!currentUser) return;
+    try {
+        const res = await fetch(`${API_BASE}/groups?userId=${currentUser.userId}`, {
+            headers: { 'Authorization': `Bearer ${currentUser.token}` }
+        });
+        if (res.ok) {
+            const groups = await res.json();
+            renderMyGroups(groups);
+        }
+    } catch (e) { console.error(e); }
+}
+
+function renderMyGroups(groups) {
+    const container = document.getElementById('myGroupsList');
+    if (!container) return;
+
+    if (!groups || groups.length === 0) {
+        container.innerHTML = '<p style="font-size:0.9rem; color:#b2bec3;">Chưa tham gia nhóm nào</p>';
+        return;
+    }
+
+    container.innerHTML = groups.map(g => {
+        const isWaiting = g.status === 'waiting';
+        return `
+        <div class="my-group-item" onclick="rejoinGroup('${g.code}')">
+            <div>
+                <div class="my-group-code">CODE: ${g.code}</div>
+                <div style="font-size:0.8rem; color:#636e72;">${g.members.length} thành viên</div>
+            </div>
+            <div>
+                ${g.result ? `<span>🏆 ${g.result}</span>` : ''}
+                <span class="my-group-status ${g.status}">${isWaiting ? 'Đang chờ' : 'Đã xong'}</span>
+            </div>
+        </div>
+        `;
+    }).join('');
+}
+
+function rejoinGroup(code) {
+    document.getElementById('joinCodeInput').value = code;
+    joinGroup();
 }
 
 // --- GROUP LOGIC ---

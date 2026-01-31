@@ -225,19 +225,33 @@
         </div>
     </div>
 
-    <!-- Login Modal -->
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Login Modal (Trainer Card Style) -->
     <div id="authModal" class="modal">
         <div class="modal-content">
-            <button class="close-auth">&times;</button>
-            <h2 style="color: var(--pk-pink-dark); margin-bottom: 1.5rem;">Đăng nhập / Đăng ký</h2>
-            <input type="text" id="authUsername" placeholder="Tên đăng nhập"
-                style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #ddd; outline: none;">
-            <input type="password" id="authPassword" placeholder="Mật khẩu"
-                style="width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 10px; border: 1px solid #ddd; outline: none;">
-            <div style="display: flex; gap: 10px;">
-                <button id="doLoginBtn" class="premium-btn" style="flex:1;">Đăng nhập</button>
-                <button id="doRegisterBtn" class="secondary-btn"
-                    style="flex:1; background: #dfe6e9; color: #636e72;">Đăng ký</button>
+            <div class="trainer-card-header">
+                <h3 style="color:white; z-index:1; margin-bottom:5px;">Huấn Luyện Viên</h3>
+                <button class="close-auth" style="color:white;">&times;</button>
+            </div>
+            <div class="trainer-card-body">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" id="tabLogin">Đăng nhập</button>
+                    <button class="auth-tab" id="tabRegister">Đăng ký</button>
+                </div>
+
+                <div class="auth-box">
+                    <div class="auth-input-group">
+                        <span class="auth-input-icon">👤</span>
+                        <input type="text" id="authUsername" placeholder="Tên đăng nhập">
+                    </div>
+                    <div class="auth-input-group">
+                        <span class="auth-input-icon">🔑</span>
+                        <input type="password" id="authPassword" placeholder="Mật khẩu">
+                    </div>
+                    <button id="doAuthBtn" class="premium-btn" style="width:100%; margin-top:10px;">Đăng Nhập</button>
+                </div>
             </div>
         </div>
     </div>
