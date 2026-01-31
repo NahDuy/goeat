@@ -37,9 +37,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupMenuListeners();
 });
 // ... 
-const toggleGroupBtn = document.getElementById('toggleGroupBtn'); // Assuming this is defined elsewhere, adding for context
-const soloModes = document.getElementById('soloModes'); // Assuming this is defined elsewhere, adding for context
-const groupDashboard = document.getElementById('groupDashboard'); // Assuming this is defined elsewhere, adding for context
 
 const toggleGroupBtn = document.getElementById('toggleGroupBtn');
 const backToSoloBtn = document.getElementById('backToSoloBtn');
