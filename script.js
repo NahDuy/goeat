@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (storedUser) {
         currentUser = JSON.parse(storedUser);
         updateAuthUI();
+        fetchMyGroups(); // Load groups if already logged in
     }
 
     await fetchData();
@@ -31,6 +32,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupEventListeners();
     setupAuthListeners();
     setupGroupListeners();
+});
+// ... 
+toggleGroupBtn.addEventListener('click', () => {
+    if (!currentUser) return showToast('Vui lòng đăng nhập để dùng tính năng này!', 'error');
+    if (soloModes.style.display !== 'none') {
+        soloModes.style.display = 'none';
+        groupDashboard.style.display = 'block';
+        toggleGroupBtn.textContent = 'Trở về Solo';
+        fetchMyGroups(); // Refresh list when entering mode
+    } else {
+        soloModes.style.display = 'block';
+        groupDashboard.style.display = 'none';
+        toggleGroupBtn.textContent = '👥 Ăn Nhóm';
+        stopPolling();
+    }
 });
 
 function updateAuthUI() {
