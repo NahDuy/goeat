@@ -340,20 +340,31 @@ function renderGroupRoom() {
     document.getElementById('groupLobby').style.display = 'none';
     document.getElementById('groupRoom').style.display = 'block';
 
-    document.getElementById('roomCodeDisplay').innerHTML = `
-        <button onclick="leaveGroupRoom()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; margin-right:10px;">⬅️</button>
-        ${currentGroup.code}
-    `;
+    document.getElementById('roomCodeDisplay').textContent = currentGroup.code;
     const memberList = document.getElementById('memberList');
 
     memberList.innerHTML = currentGroup.members.map(m => {
         const isHost = m.userId === currentGroup.host;
         const statusIcon = m.ready ? '✅' : '⏳';
         return `
-        <li style="padding: 5px 0; border-bottom: 1px dashed #eee; display:flex; justify-content:space-between;">
-            <span>${isHost ? '👑 ' : ''}<strong>${m.username}</strong></span>
-            <span>${statusIcon} ${m.dishes.length ? `(${m.dishes.length} món)` : ''}</span>
-        </li>`;
+    // Use grid layout
+    memberList.className = 'member-grid'; 
+    memberList.innerHTML = currentGroup.members.map(m => {
+        const isHost = m.userId === currentGroup.host;
+        const isReady = m.dishes.length > 0;
+        
+        let avatar = '🧑‍🍳';
+        if(isHost) avatar = '👑';
+        else if(isReady) avatar = '😋';
+
+        return `
+            < li class="member-card ${isHost ? 'is-host' : ''} ${isReady ? 'is-ready' : ''}" >
+            <div class="member-avatar">${avatar}</div>
+            <div class="member-name">${m.username}</div>
+            <div class="member-status">
+                ${isReady ? `<span style="color:#00b894;">${m.dishes.length} món</span>` : 'Đang nghĩ...'}
+            </div>
+        </li > `;
     }).join('');
 
     // Show Host Controls ONLY if user is host and not decided/rolling
@@ -372,8 +383,8 @@ function renderGroupRoom() {
 
     if (myInfo && myInfo.dishes.length > 0) {
         // Show what I picked
-        myMsgDiv.innerHTML = `<small style="color:#636e72;">Đã chọn: <b>${myInfo.dishes.join(', ')}</b></small>`;
-        document.getElementById('submitVoteBtn').textContent = `Gửi Thêm (${myInfo.dishes.length} món)`;
+        myMsgDiv.innerHTML = `< small style = "color:#636e72;" > Đã chọn: <b>${myInfo.dishes.join(', ')}</b></small > `;
+        document.getElementById('submitVoteBtn').textContent = `Gửi Thêm(${ myInfo.dishes.length } món)`;
     } else {
         myMsgDiv.innerHTML = '';
         document.getElementById('submitVoteBtn').textContent = 'Gửi Đề Xuất';
@@ -397,15 +408,21 @@ function renderGroupRoom() {
     } else if (currentGroup.status === 'decided') {
         resultDiv.style.display = 'block';
 
-        // Result Display with Return Button
-        resultDiv.innerHTML = `
-            <h2 style="font-size: 1.2rem;">Hôm nay chúng ta ăn:</h2>
-            <div id="groupResultText" style="color: var(--pk-red); font-size: 2.5rem; font-weight: 800; text-shadow: 2px 2px 0 white; margin: 10px 0;">
-                ${currentGroup.result}
-            </div>
-            <button class="secondary-btn" onclick="leaveGroupRoom()" style="width:100%; margin-top:10px;">⬅️ Về Danh Sách Nhóm</button>
-        `;
+        // Result Display
+        let hostResetBtn = '';
+        if(currentGroup.host === currentUser.userId) {
+            hostResetBtn = `< button class="premium-btn" onclick = "resetGroup()" style = "width:100%; margin-top:10px; background:var(--pk-yellow); color:#2d3436;" >🔄 Làm ván mới</button > `;
+        }
 
+        resultDiv.innerHTML = `
+            < h2 style = "font-size: 1.2rem;" > Hôm nay chúng ta ăn:</h2 >
+                <div id="groupResultText" style="color: var(--pk-red); font-size: 2.5rem; font-weight: 800; text-shadow: 2px 2px 0 white; margin: 10px 0;">
+                    ${currentGroup.result}
+                </div>
+            ${ hostResetBtn }
+        <button class="secondary-btn" onclick="leaveGroupRoom()" style="width:100%; margin-top:10px;">⬅️ Về Danh Sách Nhóm</button>
+        `;
+        
         stopPolling();
         playSound('reveal');
         createConfetti();
@@ -419,30 +436,30 @@ async function fetchData(params = '') {
     try {
         const headers = {};
         if (currentUser) {
-            headers['Authorization'] = `Bearer ${currentUser.token}`;
+            headers['Authorization'] = `Bearer ${ currentUser.token } `;
         }
 
-        const res = await fetch(`${API_BASE}/cards${params}`, { headers });
-        const data = await res.json();
-        // Fallback for empty DB
-        if (!Array.isArray(data) || data.length === 0) {
-            foodData = [
-                { dish: "Cơm tấm", category: "rice", suit: "heart", value: "K" },
-                { dish: "Phở bò", category: "noodle", suit: "diamond", value: "Q" }
-                // Add more mock data if needed or rely on seeding
-            ];
-        } else {
-            foodData = data;
-        }
-
-        applyFilter(document.querySelector('.filter-btn.active').dataset.category);
-
-        document.getElementById('randomBtn').textContent = `Bốc 1 Món (Có ${foodData.length} món)`;
-        document.getElementById('randomBtn').disabled = false;
-    } catch (error) {
-        console.error('Fetch error:', error);
-        showToast('Lỗi kết nối database!', 'error');
+        const res = await fetch(`${ API_BASE }/cards${params}`, { headers });
+    const data = await res.json();
+    // Fallback for empty DB
+    if (!Array.isArray(data) || data.length === 0) {
+        foodData = [
+            { dish: "Cơm tấm", category: "rice", suit: "heart", value: "K" },
+            { dish: "Phở bò", category: "noodle", suit: "diamond", value: "Q" }
+            // Add more mock data if needed or rely on seeding
+        ];
+    } else {
+        foodData = data;
     }
+
+    applyFilter(document.querySelector('.filter-btn.active').dataset.category);
+
+    document.getElementById('randomBtn').textContent = `Bốc 1 Món (Có ${foodData.length} món)`;
+    document.getElementById('randomBtn').disabled = false;
+} catch (error) {
+    console.error('Fetch error:', error);
+    showToast('Lỗi kết nối database!', 'error');
+}
 }
 
 function applyFilter(category) {
@@ -482,6 +499,30 @@ function leaveGroupRoom() {
     document.getElementById('groupRoom').style.display = 'none';
     document.getElementById('groupLobby').style.display = 'block';
     fetchMyGroups();
+}
+
+async function resetGroup() {
+    if (!confirm('Bạn muốn làm mới phòng để chơi ván khác?')) return;
+    try {
+        const res = await fetch(`${API_BASE}/groups`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${currentUser.token}`
+            },
+            body: JSON.stringify({ action: 'reset', groupCode: currentGroup.code })
+        });
+        if (res.ok) {
+            showToast('Đã làm mới phòng!', 'success');
+            // Polling will catch the status change or we can manually trigger
+            currentGroup = await res.json();
+            renderGroupRoom();
+            startPolling();
+        } else {
+            const data = await res.json();
+            showToast(data.message, 'error');
+        }
+    } catch (e) { console.error(e); }
 }
 
 // ... (Helper functions: playSound, createConfetti, initHistory, etc. - Assuming they exist or implemented below)

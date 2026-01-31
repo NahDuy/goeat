@@ -126,40 +126,42 @@
             <!-- GROUP MODE UI -->
             <div id="groupDashboard">
                 <!-- Lobby -->
-                <div id="groupLobby">
-                    <h2 style="color: var(--pk-pink-dark); margin-bottom: 1rem;">Chế độ Ăn Nhóm</h2>
+                <div id="groupLobby" class="tech-panel">
+                    <h2 style="color: var(--pk-pink-dark); margin-bottom: 1rem;"><span
+                            style="font-size:1.5rem;">🏢</span> Sảnh Chờ</h2>
 
-                    <div id="myGroupsList" style="margin-bottom: 1.5rem; max-height: 150px; overflow-y: auto;">
+                    <div id="myGroupsList" style="margin-bottom: 1.5rem; max-height: 200px; overflow-y: auto;">
                         <!-- Groups will be injected here -->
                     </div>
 
                     <div class="action-buttons" style="flex-direction: column; gap: 10px;">
-                        <button id="createGroupBtn" class="premium-btn">Tạo Phòng Mới</button>
-                        <div style="display: flex; gap: 5px; justify-content: center;">
-                            <input type="text" id="joinCodeInput" placeholder="Mã phòng (VD: X7A9)"
-                                style="padding: 10px; border-radius: 15px; border: 2px solid #dfe6e9; width: 60%; text-align: center; font-weight: bold; text-transform: uppercase;">
-                            <button id="joinGroupBtn" class="secondary-btn" style="padding: 0 1.5rem;">Vào</button>
+                        <button id="createGroupBtn" class="premium-btn">✨ Tạo Phòng Mới</button>
+                        <div style="position:relative;">
+                            <input type="text" id="joinCodeInput" class="tech-input"
+                                placeholder="Nhập mã phòng (VD: X7A9)"
+                                style="text-align: center; text-transform: uppercase; font-weight:800; letter-spacing: 2px;">
                         </div>
+                        <button id="joinGroupBtn" class="secondary-btn" style="width:100%;">🚀 Vào Ngay</button>
                     </div>
                 </div>
 
                 <!-- Waiting Room -->
-                <div id="groupRoom" style="display: none;">
-                    <h3 style="color: #636e72;">Phòng: <span id="roomCodeDisplay"
-                            style="font-size: 2.5rem; color: var(--pk-blue); font-weight: 800; display: block;">PENDING</span>
-                    </h3>
-
-                    <div class="pokedex-screen" style="margin: 1rem 0; text-align: left;">
-                        <h4 style="margin-bottom: 5px;">Thành viên:</h4>
-                        <ul id="memberList"
-                            style="list-style: none; padding-left: 5px; max-height: 100px; overflow-y: auto;">
-                            <!-- Members injected here -->
-                        </ul>
+                <div id="groupRoom" class="tech-panel" style="display: none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <button onclick="leaveGroupRoom()"
+                            style="background:none; border:none; font-size:1.5rem; cursor:pointer;">⬅️</button>
+                        <h3 style="color:#636e72; margin:0;">Phòng: <span id="roomCodeDisplay"
+                                style="color:var(--pk-blue); font-weight:800;">CODE</span></h3>
                     </div>
 
-                    <div id="votingSection">
-                        <input type="text" id="dishVoteInput" placeholder="Bạn muốn ăn món gì?..."
-                            style="width: 100%; padding: 12px; border-radius: 15px; border: 2px solid #dfe6e9; margin-bottom: 10px; outline: none;">
+                    <h4 style="margin-bottom: 5px; color:#b2bec3;">Thành viên tham gia:</h4>
+                    <ul id="memberList" class="member-grid">
+                        <!-- Members injected here -->
+                    </ul>
+
+                    <div id="votingSection" style="margin-top:20px;">
+                        <input type="text" id="dishVoteInput" class="tech-input" placeholder="Nhập món bạn muốn..."
+                            style="margin-bottom:10px;">
                         <button id="submitVoteBtn" class="premium-btn" style="width: 100%;">Gửi Đề Xuất</button>
                     </div>
 
@@ -169,11 +171,8 @@
                             (Host)</button>
                     </div>
 
-                    <div id="groupResult" style="display: none; margin-top: 1rem; animation: wobble 1s infinite;">
-                        <h2 style="font-size: 1.2rem;">Hôm nay chúng ta ăn:</h2>
-                        <div id="groupResultText"
-                            style="color: var(--pk-red); font-size: 2.5rem; font-weight: 800; text-shadow: 2px 2px 0 white;">
-                        </div>
+                    <div id="groupResult" style="display: none; margin-top: 1.5rem; animation: wobble 1s infinite;">
+                        <!-- Result injected inside -->
                     </div>
                 </div>
             </div>
