@@ -79,6 +79,10 @@ async function handleAuth(action) {
             localStorage.setItem('user_auth', JSON.stringify(currentUser));
             updateAuthUI();
             authModal.style.display = 'none';
+            // Assuming showToast and fetchMyGroups are defined elsewhere or will be added
+            // showToast(`Xin chào Trainer, ${username}!`, 'success');
+            // fetchMyGroups(); // Load groups after login
+            fetchData(); // Reload deck (Personalized)
             alert(action === 'login' ? 'Đăng nhập thành công!' : 'Đăng ký thành công!');
         } else {
             alert(data.message || 'Có lỗi xảy ra');
@@ -176,16 +180,31 @@ async function submitVote() {
 }
 
 async function rollGroupResult() {
-    if (!confirm('Chốt đơn và Random ngay?')) return;
+    if (!confirm('Chốt đơn và Random ngay? Chỉ Host mới làm được nha!')) return;
     try {
-        const res = await fetch(`${API_BASE}/groups`, {
+        // Step 1: Start Animation (Everyone sees "Rolling...")
+        await fetch(`${API_BASE}/groups`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${currentUser.token}`
             },
-            body: JSON.stringify({ action: 'roll', groupCode: currentGroup.code })
+            body: JSON.stringify({ action: 'startRoll', groupCode: currentGroup.code })
         });
+
+        // Wait for drama...
+        setTimeout(async () => {
+            // Step 2: Finalize Result
+            await fetch(`${API_BASE}/groups`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${currentUser.token}`
+                },
+                body: JSON.stringify({ action: 'finishRoll', groupCode: currentGroup.code })
+            });
+        }, 3000); // 3 seconds suspense
+
     } catch (e) { console.error(e); }
 }
 
@@ -213,29 +232,58 @@ function renderGroupRoom() {
 
     document.getElementById('roomCodeDisplay').textContent = currentGroup.code;
     const memberList = document.getElementById('memberList');
-    memberList.innerHTML = currentGroup.members.map(m =>
-        `<li>${m.username} ${m.ready ? '✅' : '⏳'} - ${m.dishes.join(', ')}</li>`
-    ).join('');
 
-    // Show Host Controls
-    if (currentGroup.host === currentUser.userId) {
-        document.getElementById('hostControls').style.display = 'block';
+    memberList.innerHTML = currentGroup.members.map(m => {
+        const isHost = m.userId === currentGroup.host;
+        const statusIcon = m.ready ? '✅' : '⏳';
+        return `
+        <li style="padding: 5px 0; border-bottom: 1px dashed #eee; display:flex; justify-content:space-between;">
+            <span>${isHost ? '👑 ' : ''}<strong>${m.username}</strong></span>
+            <span>${statusIcon} ${m.dishes.length ? `(${m.dishes.length} món)` : ''}</span>
+        </li>`;
+    }).join('');
+
+    // Show Host Controls ONLY if user is host and not decided/rolling
+    const isHost = currentGroup.host === currentUser.userId;
+    const hostControls = document.getElementById('hostControls');
+
+    if (isHost && currentGroup.status === 'waiting') {
+        hostControls.style.display = 'block';
+    } else {
+        hostControls.style.display = 'none';
     }
 
-    // Show Result
-    if (currentGroup.status === 'decided') {
-        document.getElementById('groupResult').style.display = 'block';
-        document.getElementById('groupResultText').textContent = currentGroup.result;
-        stopPolling(); // Stop polling when decided
+    // Handle STATUS
+    const resultDiv = document.getElementById('groupResult');
+    const resultText = document.getElementById('groupResultText');
+
+    if (currentGroup.status === 'rolling') {
+        // Show Animation
+        resultDiv.style.display = 'block';
+        resultText.textContent = '🎲 Đang bốc...';
+        resultText.style.color = '#74b9ff';
+        // Optional: Play drumroll sound here
+    } else if (currentGroup.status === 'decided') {
+        resultDiv.style.display = 'block';
+        resultText.textContent = currentGroup.result;
+        resultText.style.color = 'var(--pk-red)';
+        stopPolling();
         playSound('reveal');
         createConfetti();
+    } else {
+        resultDiv.style.display = 'none';
     }
 }
 
 // --- EXISTING FUNCTIONS (Keep as is just wire up) ---
 async function fetchData(params = '') {
     try {
-        const res = await fetch(`${API_BASE}/cards${params}`);
+        const headers = {};
+        if (currentUser) {
+            headers['Authorization'] = `Bearer ${currentUser.token}`;
+        }
+
+        const res = await fetch(`${API_BASE}/cards${params}`, { headers });
         const data = await res.json();
         // Fallback for empty DB
         if (!Array.isArray(data) || data.length === 0) {

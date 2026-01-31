@@ -64,23 +64,30 @@ module.exports = async (req, res) => {
                 return res.status(200).json(group);
             }
 
-            if (action === 'roll') { // Host triggers roll
+            if (action === 'startRoll') {
                 const group = await Group.findOne({ code: groupCode });
                 if (!group) return res.status(404).json({ message: 'Room not found' });
+                if (group.host.toString() !== user.userId) return res.status(403).json({ message: 'Only host' });
 
-                if (group.host.toString() !== user.userId) {
-                    return res.status(403).json({ message: 'Only host can roll' });
-                }
+                group.status = 'rolling';
+                await group.save();
+                return res.status(200).json(group);
+            }
 
-                // Collect all dishes
+            if (action === 'finishRoll') {
+                const group = await Group.findOne({ code: groupCode });
+                if (!group) return res.status(404).json({ message: 'Room not found' });
+                if (group.host.toString() !== user.userId) return res.status(403).json({ message: 'Only host' });
+
+                // Collect dishes
                 let allDishes = [];
                 group.members.forEach(m => {
                     if (m.dishes && m.dishes.length > 0) allDishes.push(...m.dishes);
                 });
 
-                if (allDishes.length === 0) return res.status(400).json({ message: 'No dishes submitted!' });
+                // Fallback if empty
+                if (allDishes.length === 0) allDishes = ['Phở', 'Bún chả', 'Cơm tấm', 'Mì xào'];
 
-                // Random pick
                 const winner = allDishes[Math.floor(Math.random() * allDishes.length)];
                 group.result = winner;
                 group.status = 'decided';
