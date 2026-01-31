@@ -41,20 +41,32 @@ const toggleGroupBtn = document.getElementById('toggleGroupBtn'); // Assuming th
 const soloModes = document.getElementById('soloModes'); // Assuming this is defined elsewhere, adding for context
 const groupDashboard = document.getElementById('groupDashboard'); // Assuming this is defined elsewhere, adding for context
 
+const toggleGroupBtn = document.getElementById('toggleGroupBtn');
+const backToSoloBtn = document.getElementById('backToSoloBtn');
+const soloModes = document.getElementById('soloModes');
+const groupDashboard = document.getElementById('groupDashboard');
+const mainFilterBar = document.getElementById('mainFilterBar');
+
+// Switch to Group Mode
 toggleGroupBtn.addEventListener('click', () => {
     if (!currentUser) return showToast('Vui lòng đăng nhập để dùng tính năng này!', 'error');
-    if (soloModes.style.display !== 'none') {
-        soloModes.style.display = 'none';
-        groupDashboard.style.display = 'block';
-        toggleGroupBtn.textContent = 'Trở về Solo';
-        fetchMyGroups(); // Refresh list when entering mode
-    } else {
-        soloModes.style.display = 'block';
-        groupDashboard.style.display = 'none';
-        toggleGroupBtn.textContent = '👥 Ăn Nhóm';
-        stopPolling();
-    }
+
+    soloModes.style.display = 'none';
+    mainFilterBar.style.display = 'none'; // Hide filters
+    groupDashboard.style.display = 'block';
+
+    fetchMyGroups();
 });
+
+// Back to Solo Mode
+if (backToSoloBtn) {
+    backToSoloBtn.addEventListener('click', () => {
+        groupDashboard.style.display = 'none';
+        soloModes.style.display = 'block';
+        mainFilterBar.style.display = 'flex'; // Show filters
+        stopPolling();
+    });
+}
 
 function updateAuthUI() {
     if (currentUser) {

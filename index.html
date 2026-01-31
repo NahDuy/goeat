@@ -120,7 +120,7 @@
         </header>
 
         <!-- Filters -->
-        <div class="filter-bar">
+        <div id="mainFilterBar" class="filter-bar">
             <button class="filter-btn active" data-category="all">Tất cả</button>
             <button class="filter-btn" data-category="rice">Cơm</button>
             <button class="filter-btn" data-category="noodle">Bún/Phở</button>
@@ -132,10 +132,15 @@
             <div id="groupDashboard">
                 <!-- Lobby -->
                 <div id="groupLobby" class="tech-panel">
-                    <h2 style="color: var(--pk-pink-dark); margin-bottom: 1rem;"><span
-                            style="font-size:1.5rem;">🏢</span> Sảnh Chờ</h2>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <button id="backToSoloBtn" class="secondary-btn"
+                            style="padding: 5px 10px; font-size: 0.8rem;">⬅️ Solo</button>
+                        <h2 style="color: var(--pk-pink-dark); margin:0;"><span style="font-size:1.5rem;">🏢</span> Sảnh
+                            Chờ</h2>
+                        <div style="width:50px;"></div> <!-- Spacer for centering -->
+                    </div>
 
-                    <div style="margin-bottom:10px; position:relative;">
+                    <div style="margin:10px 0; position:relative;">
                         <input type="text" id="searchGroupInput" class="tech-input" placeholder="🔍 Tìm nhóm của tôi..."
                             style="padding: 8px 15px; font-size:0.9rem;">
                     </div>
