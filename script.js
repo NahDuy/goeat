@@ -530,6 +530,24 @@ function setupEventListeners() {
             applyFilter(e.target.dataset.category);
         });
     });
+
+    // Sound Toggle
+    if (soundBtn) {
+        soundBtn.addEventListener('click', () => {
+            const isMuted = soundBtn.textContent === '🔇';
+            soundBtn.textContent = isMuted ? '🔊' : '🔇';
+            // Logic to actually mute/unmute audio elements if needed
+            document.querySelectorAll('audio').forEach(a => a.muted = !isMuted);
+            showToast(isMuted ? 'Đã bật âm thanh' : 'Đã tắt âm thanh', 'info');
+        });
+    }
+
+    // Settings (Placeholder)
+    if (settingsBtn) {
+        settingsBtn.addEventListener('click', () => {
+            showToast('Tính năng Cài đặt đang được phát triển! 🛠️', 'info');
+        });
+    }
 }
 // Helper to inject vote display below button
 function createMyVotesDisplay() {
@@ -632,26 +650,59 @@ function createConfetti() {
 }
 
 // Single Pick Logic
+// Single Pick Logic
 function startSinglePick() {
     if (filteredData.length === 0) return showToast('Không có món nào!', 'error');
-    const winner = filteredData[Math.floor(Math.random() * filteredData.length)];
-    // Just show result for now to keep concise
-    document.getElementById('dishName').textContent = winner.dish;
-    document.getElementById('dishBadge').textContent = winner.dish;
-    document.getElementById('dishBadge').style.opacity = 1;
-    updateCardVisual(document.querySelector('.card-container'), winner);
+
+    // Reset state first
+    const container = document.querySelector('.card-container');
+    container.classList.remove('flipped', 'shaking');
+    document.getElementById('dishBadge').style.opacity = 0;
+
+    // Shake effect
+    container.classList.add('shaking');
+    playSound('shuffle');
+
+    setTimeout(() => {
+        container.classList.remove('shaking');
+
+        // Pick Winner
+        const winner = filteredData[Math.floor(Math.random() * filteredData.length)];
+
+        // Update Visuals
+        updateCardVisual(container, winner);
+        document.getElementById('dishName').textContent = winner.dish;
+        document.getElementById('dishBadge').textContent = winner.dish;
+        document.getElementById('dishBadge').style.opacity = 1; // Fade in badge
+
+        // FLIP!
+        container.classList.add('flipped');
+        playSound('reveal');
+        createConfetti();
+
+        // Save to History
+        addToHistory(winner.dish);
+    }, 800);
 }
 
 function startPick5() {
-    if (filteredData.length < 5) return showToast('Cần ít nhất 5 món!', 'error');
+    if (filteredData.length < 5) return showToast('Cần ít nhất 5 món trong danh sách!', 'error');
+
+    // UI Switch
     document.getElementById('cardContainer').style.display = 'none';
     const handChecks = document.getElementById('handContainer');
     handChecks.style.display = 'flex';
     handChecks.innerHTML = '';
 
-    // ... pick 5 logic ...
+    document.getElementById('dishName').textContent = 'Chọn 1 lá bài bất kỳ!';
+    document.getElementById('dishBadge').style.opacity = 0;
+
+    // Logic
     const pool = [...filteredData];
+    playSound('shuffle');
+
     for (let i = 0; i < 5; i++) {
+        // Random pick from pool without replacement
         const idx = Math.floor(Math.random() * pool.length);
         const card = pool[idx];
         pool.splice(idx, 1);
@@ -661,17 +712,30 @@ function startPick5() {
         mini.innerHTML = `
             <div class="card-inner">
                  <div class="card-front">
-                    <!-- Pokeball CSS for Mini settings -->
                     <div class="card-pattern" style="border:none; background:none;"></div>
                  </div>
                 <div class="card-back"></div>
             </div>
         `;
+
+        // Click Event
         mini.addEventListener('click', () => {
+            if (mini.classList.contains('selected')) return; // Check if already clicked
+
+            // Disable others (Optional: allow only 1 pick?)
+            // For now, let them reveal all if they want, but highlight the last picked
+
             updateCardVisual(mini, card);
             mini.classList.add('selected');
+
             document.getElementById('dishName').textContent = card.dish;
+            document.getElementById('dishBadge').textContent = card.dish;
+            document.getElementById('dishBadge').style.opacity = 1;
+
+            playSound('reveal');
+            addToHistory(card.dish);
         });
+
         handChecks.appendChild(mini);
     }
 }
