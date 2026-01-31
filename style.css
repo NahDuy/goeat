@@ -681,6 +681,60 @@ header p {
     background: #f5f6fa;
 }
 
+/* --- Auth Inputs & Tabs --- */
+.auth-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.auth-tab {
+    background: transparent;
+    border: 2px solid #ccc;
+    padding: 5px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 700;
+    color: #aaa;
+    transition: all 0.3s;
+}
+
+.auth-tab.active {
+    border-color: var(--pk-dark);
+    color: var(--pk-dark);
+    background: white;
+}
+
+.auth-input-group {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.auth-input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    z-index: 10;
+}
+
+.auth-input-group input {
+    width: 100%;
+    padding: 12px 15px 12px 45px;
+    border-radius: 12px;
+    border: 2px solid #dfe6e9;
+    font-family: inherit;
+    outline: none;
+    transition: border 0.3s;
+}
+
+.auth-input-group input:focus {
+    border-color: var(--pk-blue);
+}
+
 /* Responsive */
 @media (max-width: 480px) {
     .container {
