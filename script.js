@@ -432,6 +432,12 @@ function renderGroupRoom() {
             <button class="secondary-btn" onclick="leaveGroupRoom()" style="width:100%; margin-top:10px;">⬅️ Về Danh Sách Nhóm</button>
         `;
 
+        // --- HISTORY SAVE ---
+        if (currentGroup.result && currentGroup.result !== lastRecordedResult) {
+            lastRecordedResult = currentGroup.result;
+            addToHistory(currentGroup.result);
+        }
+
         stopPolling();
         playSound('reveal');
         createConfetti();
@@ -541,9 +547,42 @@ function playSound(type) {
     // Implement sound logic
 }
 
+// --- HISTORY LOGIC ---
+let lastRecordedResult = null; // Prevent duplicate history entries
+
 function initHistory() {
+    const stored = localStorage.getItem('food_history');
+    if (stored) {
+        history = JSON.parse(stored);
+        renderHistory();
+    }
+}
+
+function addToHistory(dish) {
+    if (!dish) return;
+    // Add to top
+    history.unshift({ name: dish, time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) });
+    if (history.length > 20) history.pop(); // Keep last 20
+    localStorage.setItem('food_history', JSON.stringify(history));
+    renderHistory();
+}
+
+function renderHistory() {
     const list = document.getElementById('historyList');
-    // Implement history logic
+    if (!list) return;
+    list.innerHTML = history.map(h => `
+        <div class="history-item">
+            <span>${h.name}</span>
+            <span style="font-size:0.7rem; color:#636e72; margin-left:5px;">${h.time}</span>
+        </div>
+    `).join('');
+}
+
+// ... (In renderGroupRoom, finding the decided block)
+// TRIGGER HISTORY SAVE
+if (currentGroup.result && currentGroup.result !== lastRecordedResult) {
+    lastRecordedResult = currentGroup.result;
+    addToHistory(currentGroup.result);
 }
 
 function createConfetti() {

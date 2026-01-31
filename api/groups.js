@@ -66,10 +66,10 @@ module.exports = async (req, res) => {
 
                 const member = group.members.find(m => m.userId.toString() === user.userId);
                 if (member) {
-                    // Append new dishes, filter duplicates if needed
+                    // Append new dishes, allow duplicates for weighting
                     const newDishes = dishes || [];
                     newDishes.forEach(d => {
-                        if (!member.dishes.includes(d)) member.dishes.push(d);
+                        member.dishes.push(d);
                     });
                     member.ready = true;
                     await group.save();
