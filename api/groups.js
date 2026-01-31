@@ -101,13 +101,27 @@ module.exports = async (req, res) => {
             return res.status(500).json({ message: 'Server error' });
         }
     } else if (req.method === 'GET') {
-        const { code } = req.query;
-        if (!code) return res.status(400).json({ message: 'Missing code' });
+        const { code, userId } = req.query;
 
-        const group = await Group.findOne({ code });
-        if (!group) return res.status(404).json({ message: 'Room not found' });
+        if (code) {
+            const group = await Group.findOne({ code });
+            if (!group) return res.status(404).json({ message: 'Room not found' });
+            return res.status(200).json(group);
+        }
 
-        res.status(200).json(group);
+        if (userId) {
+            // Fetch groups where user is a member, sorted by newest
+            try {
+                const groups = await Group.find({ 'members.userId': userId })
+                    .sort({ createdAt: -1 })
+                    .limit(10); // Limit to last 10
+                return res.status(200).json(groups);
+            } catch (e) {
+                return res.status(500).json({ message: 'Error fetching groups' });
+            }
+        }
+
+        return res.status(400).json({ message: 'Missing parameters' });
     } else {
         res.status(405).json({ message: 'Method Not Allowed' });
     }
