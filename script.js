@@ -335,7 +335,10 @@ function renderGroupRoom() {
     document.getElementById('groupLobby').style.display = 'none';
     document.getElementById('groupRoom').style.display = 'block';
 
-    document.getElementById('roomCodeDisplay').textContent = currentGroup.code;
+    document.getElementById('roomCodeDisplay').innerHTML = `
+        <button onclick="leaveGroupRoom()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; margin-right:10px;">⬅️</button>
+        ${currentGroup.code}
+    `;
     const memberList = document.getElementById('memberList');
 
     memberList.innerHTML = currentGroup.members.map(m => {
@@ -358,6 +361,19 @@ function renderGroupRoom() {
         hostControls.style.display = 'none';
     }
 
+    // Check if I voted
+    const myInfo = currentGroup.members.find(m => m.userId === currentUser.userId);
+    if (myInfo && myInfo.ready) {
+        document.getElementById('dishVoteInput').disabled = true;
+        document.getElementById('dishVoteInput').value = `Đã chọn: ${myInfo.dishes[0]}`;
+        document.getElementById('submitVoteBtn').disabled = true;
+        document.getElementById('submitVoteBtn').textContent = '✅ Đã gửi - Chờ Host';
+    } else {
+        document.getElementById('dishVoteInput').disabled = false;
+        document.getElementById('submitVoteBtn').disabled = false;
+        document.getElementById('submitVoteBtn').textContent = 'Gửi Đề Xuất';
+    }
+
     // Handle STATUS
     const resultDiv = document.getElementById('groupResult');
     const resultText = document.getElementById('groupResultText');
@@ -370,8 +386,16 @@ function renderGroupRoom() {
         // Optional: Play drumroll sound here
     } else if (currentGroup.status === 'decided') {
         resultDiv.style.display = 'block';
-        resultText.textContent = currentGroup.result;
-        resultText.style.color = 'var(--pk-red)';
+
+        // Result Display with Return Button
+        resultDiv.innerHTML = `
+            <h2 style="font-size: 1.2rem;">Hôm nay chúng ta ăn:</h2>
+            <div id="groupResultText" style="color: var(--pk-red); font-size: 2.5rem; font-weight: 800; text-shadow: 2px 2px 0 white; margin: 10px 0;">
+                ${currentGroup.result}
+            </div>
+            <button class="secondary-btn" onclick="leaveGroupRoom()" style="width:100%; margin-top:10px;">⬅️ Về Danh Sách Nhóm</button>
+        `;
+
         stopPolling();
         playSound('reveal');
         createConfetti();
@@ -431,6 +455,14 @@ function setupEventListeners() {
         });
     });
 }
+// New Helper Function
+function leaveGroupRoom() {
+    stopPolling();
+    document.getElementById('groupRoom').style.display = 'none';
+    document.getElementById('groupLobby').style.display = 'block';
+    fetchMyGroups();
+}
+
 // ... (Helper functions: playSound, createConfetti, initHistory, etc. - Assuming they exist or implemented below)
 // RE-IMPLEMENTING HELPERS FOR COMPLETENESS
 
