@@ -262,8 +262,13 @@ async function joinGroup() {
 }
 
 async function submitVote() {
-    const vote = document.getElementById('dishVoteInput').value;
+    const voteInput = document.getElementById('dishVoteInput');
+    const vote = voteInput.value.trim();
     if (!vote) return showToast('Nhập món bạn muốn!', 'info');
+
+    // Support comma-separated
+    const dishes = vote.split(',').map(d => d.trim()).filter(d => d);
+
     try {
         const res = await fetch(`${API_BASE}/groups`, {
             method: 'POST',
@@ -271,12 +276,12 @@ async function submitVote() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${currentUser.token}`
             },
-            body: JSON.stringify({ action: 'submit', groupCode: currentGroup.code, dishes: [vote] })
+            body: JSON.stringify({ action: 'submit', groupCode: currentGroup.code, dishes: dishes })
         });
         if (res.ok) {
-            showToast('Đã gửi đề xuất!', 'success');
-            document.getElementById('submitVoteBtn').disabled = true;
-            document.getElementById('submitVoteBtn').textContent = 'Đã sẵn sàng';
+            showToast(`Đã thêm ${dishes.length} món!`, 'success');
+            voteInput.value = ''; // Clear input for more
+            voteInput.focus();
         }
     } catch (e) { console.error(e); }
 }
@@ -363,16 +368,21 @@ function renderGroupRoom() {
 
     // Check if I voted
     const myInfo = currentGroup.members.find(m => m.userId === currentUser.userId);
-    if (myInfo && myInfo.ready) {
-        document.getElementById('dishVoteInput').disabled = true;
-        document.getElementById('dishVoteInput').value = `Đã chọn: ${myInfo.dishes[0]}`;
-        document.getElementById('submitVoteBtn').disabled = true;
-        document.getElementById('submitVoteBtn').textContent = '✅ Đã gửi - Chờ Host';
+    const myMsgDiv = document.getElementById('myVotesDisplay') || createMyVotesDisplay();
+
+    if (myInfo && myInfo.dishes.length > 0) {
+        // Show what I picked
+        myMsgDiv.innerHTML = `<small style="color:#636e72;">Đã chọn: <b>${myInfo.dishes.join(', ')}</b></small>`;
+        document.getElementById('submitVoteBtn').textContent = `Gửi Thêm (${myInfo.dishes.length} món)`;
     } else {
-        document.getElementById('dishVoteInput').disabled = false;
-        document.getElementById('submitVoteBtn').disabled = false;
+        myMsgDiv.innerHTML = '';
         document.getElementById('submitVoteBtn').textContent = 'Gửi Đề Xuất';
     }
+
+    // Only lock if game over
+    const isLocked = currentGroup.status !== 'waiting';
+    document.getElementById('dishVoteInput').disabled = isLocked;
+    document.getElementById('submitVoteBtn').disabled = isLocked;
 
     // Handle STATUS
     const resultDiv = document.getElementById('groupResult');
@@ -455,6 +465,17 @@ function setupEventListeners() {
         });
     });
 }
+// Helper to inject vote display below button
+function createMyVotesDisplay() {
+    const section = document.getElementById('votingSection');
+    const div = document.createElement('div');
+    div.id = 'myVotesDisplay';
+    div.style.marginTop = '5px';
+    div.style.textAlign = 'center';
+    section.appendChild(div);
+    return div;
+}
+
 // New Helper Function
 function leaveGroupRoom() {
     stopPolling();

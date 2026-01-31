@@ -57,7 +57,11 @@ module.exports = async (req, res) => {
 
                 const member = group.members.find(m => m.userId.toString() === user.userId);
                 if (member) {
-                    member.dishes = dishes || []; // Array of strings
+                    // Append new dishes, filter duplicates if needed
+                    const newDishes = dishes || [];
+                    newDishes.forEach(d => {
+                        if (!member.dishes.includes(d)) member.dishes.push(d);
+                    });
                     member.ready = true;
                     await group.save();
                 }
