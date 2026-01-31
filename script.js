@@ -663,6 +663,10 @@ function createConfetti() {
 function startSinglePick() {
     if (filteredData.length === 0) return showToast('Không có món nào!', 'error');
 
+    // UI Switch
+    document.getElementById('cardContainer').style.display = 'block';
+    document.getElementById('handContainer').style.display = 'none';
+
     // Reset state first
     const container = document.querySelector('.card-container');
     container.classList.remove('flipped', 'shaking');
@@ -720,9 +724,7 @@ function startPick5() {
         mini.className = 'mini-card';
         mini.innerHTML = `
             <div class="card-inner">
-                 <div class="card-front">
-                    <div class="card-pattern" style="border:none; background:none;"></div>
-                 </div>
+                 <div class="card-front"></div>
                 <div class="card-back"></div>
             </div>
         `;
