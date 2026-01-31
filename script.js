@@ -187,11 +187,13 @@ function renderMyGroups(groups) {
 
     container.innerHTML = groups.map(g => {
         const isWaiting = g.status === 'waiting';
+        const groupName = g.name || `Phòng ${g.code}`;
         return `
         <div class="my-group-item" onclick="rejoinGroup('${g.code}')">
             <div>
-                <div class="my-group-code">CODE: ${g.code}</div>
-                <div style="font-size:0.8rem; color:#636e72;">${g.members.length} thành viên</div>
+                <div style="font-weight:bold; color:var(--pk-dark); font-size:1rem;">${groupName}</div>
+                <div class="my-group-code" style="font-size:0.8rem; color:var(--pk-blue);">CODE: ${g.code}</div>
+                <div style="font-size:0.75rem; color:#636e72;">${g.members.length} thành viên</div>
             </div>
             <div>
                 ${g.result ? `<span>🏆 ${g.result}</span>` : ''}
@@ -215,6 +217,16 @@ function setupGroupListeners() {
 
     // toggleGroupBtn listener moved to top level for better control
 
+    // Search Listener
+    document.getElementById('searchGroupInput')?.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const items = document.querySelectorAll('.my-group-item');
+        items.forEach(item => {
+            const text = item.innerText.toLowerCase();
+            item.style.display = text.includes(term) ? 'flex' : 'none';
+        });
+    });
+
     document.getElementById('createGroupBtn').addEventListener('click', createGroup);
     document.getElementById('joinGroupBtn').addEventListener('click', joinGroup);
     document.getElementById('submitVoteBtn').addEventListener('click', submitVote);
@@ -222,6 +234,7 @@ function setupGroupListeners() {
 }
 
 async function createGroup() {
+    const name = prompt('Đặt tên cho phòng của bạn (không bắt buộc):', 'Hội Ăn Trưa');
     try {
         const res = await fetch(`${API_BASE}/groups`, {
             method: 'POST',
@@ -229,7 +242,7 @@ async function createGroup() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${currentUser.token}`
             },
-            body: JSON.stringify({ action: 'create' })
+            body: JSON.stringify({ action: 'create', name: name })
         });
         const data = await res.json();
         if (res.ok) {

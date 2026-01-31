@@ -29,13 +29,22 @@ module.exports = async (req, res) => {
         try {
             if (action === 'create') {
                 // Generate simple 4-char code
+                const { name } = req.body;
                 const code = Math.random().toString(36).substring(2, 6).toUpperCase();
-                const newGroup = await Group.create({
+
+                const group = new Group({
                     code,
+                    name: name || `G-${code}`, // Default name if empty
                     host: user.userId,
-                    members: [{ userId: user.userId, username: user.username, ready: false }]
+                    members: [{
+                        userId: user.userId,
+                        username: user.username,
+                        dishes: [],
+                        ready: false
+                    }]
                 });
-                return res.status(201).json(newGroup);
+                await group.save();
+                return res.status(201).json(group);
             }
 
             if (action === 'join') {
@@ -98,6 +107,23 @@ module.exports = async (req, res) => {
                 await group.save();
 
                 return res.status(200).json({ result: winner, group });
+            }
+
+            if (action === 'reset') {
+                const group = await Group.findOne({ code: groupCode });
+                if (!group) return res.status(404).json({ message: 'Room not found' });
+                if (group.host.toString() !== user.userId) return res.status(403).json({ message: 'Only host can reset' });
+
+                group.status = 'waiting';
+                group.result = null;
+                // Reset all members
+                group.members.forEach(m => {
+                    m.dishes = [];
+                    m.ready = false;
+                });
+
+                await group.save();
+                return res.status(200).json(group);
             }
 
         } catch (error) {

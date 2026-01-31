@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const GroupSchema = new mongoose.Schema({
     code: { type: String, required: true, unique: true },
+    name: { type: String, default: 'Phòng Ăn' },
     host: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     members: [{
         userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
