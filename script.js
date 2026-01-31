@@ -34,6 +34,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupGroupListeners();
 });
 // ... 
+const toggleGroupBtn = document.getElementById('toggleGroupBtn'); // Assuming this is defined elsewhere, adding for context
+const soloModes = document.getElementById('soloModes'); // Assuming this is defined elsewhere, adding for context
+const groupDashboard = document.getElementById('groupDashboard'); // Assuming this is defined elsewhere, adding for context
+
 toggleGroupBtn.addEventListener('click', () => {
     if (!currentUser) return showToast('Vui lòng đăng nhập để dùng tính năng này!', 'error');
     if (soloModes.style.display !== 'none') {
@@ -232,13 +236,13 @@ async function createGroup() {
             currentGroup = data;
             renderGroupRoom();
             startPolling();
-        } else alert(data.message);
-    } catch (e) { console.error(e); alert('Error creating group'); }
+        } else showToast(data.message, 'error');
+    } catch (e) { console.error(e); showToast('Error creating group', 'error'); }
 }
 
 async function joinGroup() {
     const code = document.getElementById('joinCodeInput').value.toUpperCase();
-    if (!code) return alert('Nhập mã phòng!');
+    if (!code) return showToast('Nhập mã phòng!', 'error');
     try {
         const res = await fetch(`${API_BASE}/groups`, {
             method: 'POST',
@@ -253,13 +257,13 @@ async function joinGroup() {
             currentGroup = data;
             renderGroupRoom();
             startPolling();
-        } else alert(data.message);
-    } catch (e) { console.error(e); alert('Error joining group'); }
+        } else showToast(data.message, 'error');
+    } catch (e) { console.error(e); showToast('Error joining group', 'error'); }
 }
 
 async function submitVote() {
     const vote = document.getElementById('dishVoteInput').value;
-    if (!vote) return alert('Nhập món bạn muốn!');
+    if (!vote) return showToast('Nhập món bạn muốn!', 'info');
     try {
         const res = await fetch(`${API_BASE}/groups`, {
             method: 'POST',
@@ -270,7 +274,7 @@ async function submitVote() {
             body: JSON.stringify({ action: 'submit', groupCode: currentGroup.code, dishes: [vote] })
         });
         if (res.ok) {
-            alert('Đã gửi đề xuất!');
+            showToast('Đã gửi đề xuất!', 'success');
             document.getElementById('submitVoteBtn').disabled = true;
             document.getElementById('submitVoteBtn').textContent = 'Đã sẵn sàng';
         }
@@ -311,7 +315,10 @@ function startPolling() {
     groupPollInterval = setInterval(async () => {
         if (!currentGroup) return;
         try {
-            const res = await fetch(`${API_BASE}/groups?code=${currentGroup.code}`);
+            const headers = {};
+            if (currentUser) headers['Authorization'] = `Bearer ${currentUser.token}`;
+
+            const res = await fetch(`${API_BASE}/groups?code=${currentGroup.code}`, { headers });
             if (res.ok) {
                 currentGroup = await res.json();
                 renderGroupRoom();
@@ -400,7 +407,7 @@ async function fetchData(params = '') {
         document.getElementById('randomBtn').disabled = false;
     } catch (error) {
         console.error('Fetch error:', error);
-        alert('Lỗi kết nối database!');
+        showToast('Lỗi kết nối database!', 'error');
     }
 }
 
@@ -450,7 +457,7 @@ function createConfetti() {
 
 // Single Pick Logic
 function startSinglePick() {
-    if (filteredData.length === 0) return alert('Không có món nào!');
+    if (filteredData.length === 0) return showToast('Không có món nào!', 'error');
     const winner = filteredData[Math.floor(Math.random() * filteredData.length)];
     // Just show result for now to keep concise
     document.getElementById('dishName').textContent = winner.dish;
@@ -460,7 +467,7 @@ function startSinglePick() {
 }
 
 function startPick5() {
-    if (filteredData.length < 5) return alert('Cần ít nhất 5 món!');
+    if (filteredData.length < 5) return showToast('Cần ít nhất 5 món!', 'error');
     document.getElementById('cardContainer').style.display = 'none';
     const handChecks = document.getElementById('handContainer');
     handChecks.style.display = 'flex';
