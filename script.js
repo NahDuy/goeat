@@ -152,6 +152,9 @@ async function handleAuth(action) {
 
 async function fetchMyGroups() {
     if (!currentUser) return;
+    const container = document.getElementById('myGroupsList');
+    if (container) container.innerHTML = '<p style="color:#aaa; font-size:0.9rem;">⏳ Đang tải danh sách...</p>';
+
     try {
         const res = await fetch(`${API_BASE}/groups?userId=${currentUser.userId}`, {
             headers: { 'Authorization': `Bearer ${currentUser.token}` }
@@ -159,8 +162,14 @@ async function fetchMyGroups() {
         if (res.ok) {
             const groups = await res.json();
             renderMyGroups(groups);
+        } else {
+            console.error('Fetch failed', res.status);
+            if (container) container.innerHTML = '<p style="color:red;">Lỗi tải danh sách :(</p>';
         }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+        console.error(e);
+        if (container) container.innerHTML = '<p style="color:red;">Lỗi kết nối server :(</p>';
+    }
 }
 
 function renderMyGroups(groups) {
@@ -200,19 +209,7 @@ function setupGroupListeners() {
     const groupDashboard = document.getElementById('groupDashboard');
     const soloModes = document.getElementById('soloModes');
 
-    toggleGroupBtn.addEventListener('click', () => {
-        if (!currentUser) return alert('Vui lòng đăng nhập để dùng tính năng này!');
-        if (soloModes.style.display !== 'none') {
-            soloModes.style.display = 'none';
-            groupDashboard.style.display = 'block';
-            toggleGroupBtn.textContent = 'Trở về Solo';
-        } else {
-            soloModes.style.display = 'block';
-            groupDashboard.style.display = 'none';
-            toggleGroupBtn.textContent = '👥 Ăn Nhóm';
-            stopPolling();
-        }
-    });
+    // toggleGroupBtn listener moved to top level for better control
 
     document.getElementById('createGroupBtn').addEventListener('click', createGroup);
     document.getElementById('joinGroupBtn').addEventListener('click', joinGroup);
