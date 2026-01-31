@@ -13,9 +13,13 @@
     <style>
         /* Extra styles for Auth/Group placeholders if not in style.css */
         #authContainer {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
+            /* Fix overlap: Stop floating, become a block */
+            position: relative;
+            display: flex;
+            justify-content: flex-end;
+            /* Keep it on the right */
+            margin-bottom: 10px;
+            /* Push title down */
             z-index: 200;
             font-family: 'Mali', cursive;
         }
